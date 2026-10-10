@@ -51,3 +51,8 @@ void setupI2S()
     i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
     i2s_set_pin(I2S_PORT, &pin_config);
 };
+
+void setupLoRa()
+{
+    SPI.begin
+}
