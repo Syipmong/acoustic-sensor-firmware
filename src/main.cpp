@@ -16,3 +16,19 @@
 #define I2S_WS 15
 #define I2s_SD 13
 #define I2S_SCK 2
+#define I2S_PORT I2S_NUM_0
+
+// Sampling Configuration
+#define SAMPLE_RATE 16000
+#define DMA_BUFF_COUNT 8
+#define DMA_BUFF_LEN 1024
+
+uint16_t current_sequence = 0;
+
+void setupI2S()
+{
+    i2s_config_t 12s_config = {
+        .mode = (i2s_mode_t) (I2S_MODE_MASTER | I2S_MODE_RX).
+        .sample
+    }
+}
