@@ -14,7 +14,7 @@
 #define DIO0 26
 
 #define I2S_WS 15
-#define I2s_SD 13
+#define I2S_SD 13
 #define I2S_SCK 2
 #define I2S_PORT I2S_NUM_0
 
@@ -40,5 +40,14 @@ void setupI2S()
         .tx_desc_auto_clear = false,
         .fixed_mclk = 0
     };
-    
+
+    i2s_pin_config_t pin_config = {
+        .bck_io_num = I2S_SCK,
+        .ws_io_num = I2S_WS,
+        .data_out_num = I2S_PIN_NO_CHANGE,
+        .data_in_num = I2S_SD
+    };
+
+    i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
+    i2s_set_pin(I2S_PORT, &pin_config);
 };
