@@ -27,15 +27,15 @@ uint16_t current_sequence = 0;
 
 void setupI2S()
 {
-    i2s_config_t 12s_config = {
+    i2s_config_t i2s_config = {
         .mode = (i2s_mode_t) (I2S_MODE_MASTER | I2S_MODE_RX),
         .sample_rate = SAMPLE_RATE,
         .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
         .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
         .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        .dma_buff_count = DMA_BUFF_COUNT,
-        .dma_buff_len = DMA_BUFF_LEN,
+        .dma_buf_count = DMA_BUFF_COUNT,
+        .dma_buf_len = DMA_BUFF_LEN,
         .use_apll = false,
         .tx_desc_auto_clear = false,
         .fixed_mclk = 0
@@ -61,7 +61,38 @@ void setupLoRa()
     if (!LoRa.begin(868E6))
     {
         Serial.println("Lora Initialization failed!");
-        while(1)
+        while (true)
+        {
+            delay(1000);
+        }
     }
-    Lora.setSpreadingFactor(7);
+    LoRa.setSpreadingFactor(7);
+    Lora.setSignalBandwidth(125E3);
+    LoRa.setCodingRate4(5);
+}
+
+void transmitAlert(uint8_t threat, uint8_t conf)
+{
+    TelemetryPayload payload;
+    payload.node_id = 101;
+    payload.epoch_time = 1727626980;
+    payload.sequence_num = current_sequence++;
+    payload.latitude = 9.9312;
+    payload.longitude = 8.8853;
+    payload.threat_class = threat;
+    payload.confidence = conf;
+    payload.battery_volts = 3.7;
+
+    memset(payload.signature, 0, 64);
+
+    LoRa.beginPacket();
+    LoRa.write((uint8_t*) &payload, sizeof(TelemetryPayload));
+    LoRa.endPacket();
+}
+
+void setup()
+{
+    Serial.begin(115200);
+    setupI2S();
+    setupLoRa();
 }
