@@ -54,5 +54,14 @@ void setupI2S()
 
 void setupLoRa()
 {
-    SPI.begin
+    SPI.begin(SCK, MISO, MOSI, SS);
+    LoRa.setPins(SS, RST, DIO0);
+
+
+    if (!LoRa.begin(868E6))
+    {
+        Serial.println("Lora Initialization failed!");
+        while(1)
+    }
+    Lora.setSpreadingFactor(7);
 }
