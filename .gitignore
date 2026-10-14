@@ -1,0 +1,17 @@
+# PlatformIO build output and local state
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# PlatformIO IDE metadata
+.clangd
+.cache/
+
+# Editor and OS metadata
+.vscode/
+*.code-workspace
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
