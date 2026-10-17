@@ -96,3 +96,24 @@ void setup()
     setupI2S();
     setupLoRa();
 }
+
+void loop()
+{
+    size_t bytesIn = 0;
+    int32_t sampleBuffer[DMA_BUFF_LEN];
+    
+
+    esp_err_t result = i2s_read(I2S_PORT, &sampleBuffer, sizeof(sampleBuffer), &bytesIn, portMAX_DELAY);
+
+    if (result == ESP_OK && bytesIn > 0)
+    {
+        //Tflite Micro invocation passes  the PCM buffer to the model arena here
+        bool threatDetected = false;
+
+        if (threatDetected)
+        {
+            transmitAlert(1, 95);
+            delay(5000);
+        }
+    }
+}
