@@ -5,6 +5,13 @@
 
 #include <telemetry.h>
 
+// Tensor Arena  allocation
+const int kTensorArenaSize = 40 * 1024;
+uint8_t tensor_arena[kTensorArenaSize];
+
+tflite::ErrorReporter* error_reporter = nullptr;
+const tflite::Model* model = nullptr;
+
 /* Hardware Pins*/
 #define SCK 5
 #define MISO 19
