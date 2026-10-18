@@ -17,6 +17,10 @@ uint8_t tensor_arena[kTensorArenaSize];
 
 tflite::ErrorReporter* error_reporter = nullptr;
 const tflite::Model* model = nullptr;
+tflite::MicroInterpreter* interpreter = nullptr;
+TfLiteTensor* input = nullptr;
+TfLiteTensor* output = nullptr;
+
 
 /* Hardware Pins*/
 #define SCK 5
