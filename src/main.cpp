@@ -51,9 +51,24 @@ void setupTinyML()
     if(model -> version() != TFLITE_SCHEMA_VERSION)
     {
         Serial.println("Model Schema Mismatched!");
-        while (1);
-        
+        while (1);  
     }
+    
+    static tflite::AllOpsResolver resolver;
+    static tflite::MicroInterpreter static_interpreter(
+        model, resolver, tensor_arena, KTensorArenaSize, error_reporter
+    );
+    interpreter = &static_interpreter;
+
+    TfLiteStatus allocate_status = interpreter -> AllocateTensors();
+    if(allocate_status != kTfLiteOk)
+    {
+        Serial.println("Tensor allocation failed");
+        while(1)
+    }
+
+    input = interpreter -> input(0);
+    output = interpreter -> output(0);
 }
 
 void setupI2S()
