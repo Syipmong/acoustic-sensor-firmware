@@ -42,6 +42,20 @@ TfLiteTensor* output = nullptr;
 
 uint16_t current_sequence = 0;
 
+void setupTinyML()
+{
+    static tflite::MicroErrorReporter micro_error_reporter;
+    error_reporter = &micro_error_reporter;
+
+    model = tflite::GetModel(acoustic_threat_model_tflite);
+    if(model -> version() != TFLITE_SCHEMA_VERSION)
+    {
+        Serial.println("Model Schema Mismatched!");
+        while (1);
+        
+    }
+}
+
 void setupI2S()
 {
     i2s_config_t i2s_config = {
