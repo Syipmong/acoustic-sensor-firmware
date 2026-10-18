@@ -2,7 +2,13 @@
 #include <SPI.h>
 #include <LoRa.h>
 #include <driver/i2s.h>
+#include <TensorFlowLite_ESP32.h>
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
+#include "models_data.h"
 #include <telemetry.h>
 
 // Tensor Arena  allocation
@@ -74,7 +80,7 @@ void setupLoRa()
         }
     }
     LoRa.setSpreadingFactor(7);
-    Lora.setSignalBandwidth(125E3);
+    LoRa.setSignalBandwidth(125E3);
     LoRa.setCodingRate4(5);
 }
 
