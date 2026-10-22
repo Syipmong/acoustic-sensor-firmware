@@ -2,10 +2,25 @@
 #include <SPI.h>
 #include <LoRa.h>
 #include <driver/i2s.h>
+#include <TensorFlowLite_ESP32.h>
+#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
-
-
+#include "models_data.h"
 #include <telemetry.h>
+
+// Tensor Arena allocation
+const int kTensorArenaSize = 40 * 1024;
+uint8_t tensor_arena[kTensorArenaSize];
+
+tflite::ErrorReporter* error_reporter = nullptr;
+const tflite::Model* model = nullptr;
+tflite::MicroInterpreter* interpreter = nullptr;
+TfLiteTensor* input = nullptr;
+TfLiteTensor* output = nullptr;
+
 
 /* Hardware Pins*/
 #define SCK 5
@@ -26,6 +41,41 @@
 #define DMA_BUFF_LEN 1024
 
 uint16_t current_sequence = 0;
+
+void setupTinyML()
+{
+    static tflite::MicroErrorReporter micro_error_reporter;
+    error_reporter = &micro_error_reporter;
+
+    model = tflite::GetModel(acoustic_threat_model_tflite);
+    if (model->version() != TFLITE_SCHEMA_VERSION)
+    {
+        Serial.println("Model Schema Mismatched!");
+        while (true)
+        {
+            delay(1000);
+        }
+    }
+
+    static tflite::AllOpsResolver resolver;
+    static tflite::MicroInterpreter static_interpreter(
+        model, resolver, tensor_arena, kTensorArenaSize, error_reporter
+    );
+    interpreter = &static_interpreter;
+
+    TfLiteStatus allocate_status = interpreter->AllocateTensors();
+    if (allocate_status != kTfLiteOk)
+    {
+        Serial.println("Tensor allocation failed");
+        while (true)
+        {
+            delay(1000);
+        }
+    }
+
+    input = interpreter->input(0);
+    output = interpreter->output(0);
+}
 
 void setupI2S()
 {
@@ -69,7 +119,7 @@ void setupLoRa()
         }
     }
     LoRa.setSpreadingFactor(7);
-    Lora.setSignalBandwidth(125E3);
+    LoRa.setSignalBandwidth(125E3);
     LoRa.setCodingRate4(5);
 }
 
@@ -95,6 +145,7 @@ void transmitAlert(uint8_t threat, uint8_t conf)
 void setup()
 {
     Serial.begin(115200);
+    setupTinyML();
     setupI2S();
     setupLoRa();
 }
